@@ -1,13 +1,30 @@
 const express=require('express');
-const authRoutes=require('../routes/user_auth');
+const {getDocumentbyId}=require('../services/userFunction');
+const functions=require('firebase-funcions');
+
 const app=express();
 
-app.use(express.json()); //parse json
+//user api to get document
 
-app.use('/user_auth',authRoutes); // use auth routes
+app.get('/document/:id', async (req,res) => {
 
-//start server
+    const {id}=req.params;
 
-const PORT=process.env.PORT || 3000;
+    try{
+        const document=await getDocumentById('documents',id);
+        if(document){
+            res.json(document);
+        }
+        else{
+            res.status(404).json({error:'document not found'});
+        }
 
-app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`));
+    }
+
+    catch(e){
+        res.status(500).json({error:error.message});
+    }
+    
+});
+
+exports.api=functions.https.onRequest(app);

@@ -13,4 +13,4 @@ const addDoc= async (collectionName,data,AdminId) => {
     return docRef.id;
 };
 
-module.exports = addDoc;
+module.exports = {addDoc};
