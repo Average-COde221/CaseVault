@@ -5,5 +5,5 @@ export const getDocumentById= async (collectionName,docId) => {
     return doc.exists ? doc.data : null;
 };
 
-module.exports = getDocumentById;
+module.exports = {getDocumentById};
 
