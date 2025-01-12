@@ -5,40 +5,54 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  FlatList,
   StyleSheet,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';  // Import the useNavigation hook
+import { useRouter } from "expo-router";
 
 export default function CustomMenu() {
-  const navigation = useNavigation();  // Initialize the navigation hook
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const router = useRouter();
+
+  // Sample data for "Suggested For You"
+  const suggestedData = [
+    { id: "1", title: "Case 1", author: "Author A" },
+    { id: "2", title: "Case 2", author: "Author B" },
+    { id: "3", title: "Case 3", author: "Author C" },
+    { id: "4", title: "Case 4", author: "Author D" },
+    { id: "5", title: "Case 5", author: "Author E" },
+  ];
 
   const handleAuthAction = () => {
     if (isLoggedIn) {
-      setIsLoggedIn(false);  // Log out the user
-      alert("Logged out successfully");
+      setIsLoggedIn(false);
+      Alert.alert("Success", "Logged out successfully!");
     } else {
-      navigation.navigate("LoginScreen");  // Navigate to the login screen
+      router.push("/Login");
     }
   };
 
-  const handleProfilePress = () => {
-    alert("Navigate to Profile Page!");
+  const handleAddAction = () => {
+    router.push("/upload");
   };
 
-  const handleAddAction = () => {
-    alert("Add Button Pressed!");
-  };
+  const renderSuggestedItem = ({ item }) => (
+    <View style={styles.suggestedItem}>
+      <Text style={styles.suggestedTitle}>{item.title}</Text>
+      <Text style={styles.suggestedAuthor}>{item.author}</Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>CaseVault</Text>
-        <TouchableOpacity style={styles.profileCircle} onPress={handleProfilePress}>
+        <TouchableOpacity style={styles.profileCircle} onPress={() => router.push("/profile")}>
           <Image
             source={require("../assets/images/signup.jpg")}
             style={styles.profileImage}
@@ -65,38 +79,49 @@ export default function CustomMenu() {
         />
       </View>
 
+      {/* Suggested For You Section */}
+      <View style={styles.suggestedContainer}>
+        <View style={styles.suggestedHeader}>
+          <Text style={styles.suggestedTitleText}>Suggested For You</Text>
+          <TouchableOpacity>
+            <Ionicons name="ellipsis-horizontal" size={24} color="#757575" />
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={suggestedData}
+          keyExtractor={(item) => item.id}
+          renderItem={renderSuggestedItem}
+          numColumns={2}
+          contentContainerStyle={styles.suggestedList}
+        />
+      </View>
+
       {/* Add Button */}
       <TouchableOpacity style={styles.addButton} onPress={handleAddAction}>
         <Ionicons name="add" size={32} color="white" />
       </TouchableOpacity>
 
-      {/* Buttons Section */}
+      {/* Footer Buttons */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/profile")}>
           <MaterialIcons name="account-circle" size={24} color="white" />
           <Text style={styles.buttonText}>Profile</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/setting")}>
           <MaterialIcons name="settings" size={24} color="white" />
           <Text style={styles.buttonText}>Settings</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/history")}>
           <MaterialIcons name="history" size={24} color="white" />
           <Text style={styles.buttonText}>History</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <MaterialIcons name="download" size={24} color="white" />
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/download")}>
+          <MaterialIcons name="cloud-download" size={24} color="white" />
           <Text style={styles.buttonText}>Download</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.button} onPress={handleAuthAction}>
           <MaterialIcons name="logout" size={24} color="white" />
-          <Text style={styles.buttonText}>
-            {isLoggedIn ? "Logout" : "Login"}
-          </Text>
+          <Text style={styles.buttonText}>{isLoggedIn ? "Logout" : "Login"}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -114,7 +139,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: "#004D40",
+    backgroundColor: "#00A878",
   },
   headerTitle: {
     fontSize: 24,
@@ -136,15 +161,13 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: 200,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#004D40",
+    width: "100%",
+    overflow: "hidden",
   },
   image: {
-    width: "90%",
-    height: "90%",
+    width: "100%",
+    height: "100%",
     resizeMode: "cover",
-    borderRadius: 10,
   },
   searchBar: {
     flexDirection: "row",
@@ -164,10 +187,45 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
   },
+  suggestedContainer: {
+    margin: 15,
+  },
+  suggestedHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  suggestedTitleText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  suggestedList: {
+    flexDirection: "column",
+  },
+  suggestedItem: {
+    backgroundColor: "#E0E0E0",
+    borderRadius: 10,
+    padding: 10,
+    margin: 5,
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  suggestedTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#005F73",
+  },
+  suggestedAuthor: {
+    fontSize: 12,
+    color: "#757575",
+  },
   addButton: {
     position: "absolute",
-    bottom: 100, // Positioned above the row of buttons
-    right: 20,
+    bottom: 100,
+    right: 25,
     backgroundColor: "#FF5722",
     width: 60,
     height: 60,
@@ -181,7 +239,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     height: 70,
-    backgroundColor: "#004D40",
+    backgroundColor: "#00A878",
     position: "absolute",
     bottom: 0,
     left: 0,

@@ -8,8 +8,10 @@ import {
   Alert,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import { useRouter } from "expo-router"; // Import useRouter from Expo Router
 
-export default function UploadCaseScreen({ navigation }: any) {
+export default function UploadCaseScreen() {
+  const router = useRouter(); // Use router for navigation
   const [title, setTitle] = useState("");
   const [authorDetails, setAuthorDetails] = useState("");
   const [caseDetails, setCaseDetails] = useState("");
@@ -36,11 +38,20 @@ export default function UploadCaseScreen({ navigation }: any) {
       return;
     }
     Alert.alert("Success", "Case Published!");
-    navigation.goBack(); // Navigate back to the previous screen
+    console.log("Uploaded Case Details:", {
+      title,
+      authorDetails,
+      caseDetails,
+      fileName: uploadedFile.name,
+    });
+
+    // Navigate back to the previous screen
+    router.back();
   };
 
   const handleCancel = () => {
-    navigation.goBack(); // Navigate back to the previous screen
+    // Navigate back to the previous screen
+    router.back();
   };
 
   return (
@@ -72,7 +83,7 @@ export default function UploadCaseScreen({ navigation }: any) {
         {/* Date and Author */}
         <TextInput
           style={styles.input}
-          placeholder="Enter the details"
+          placeholder="Enter author details"
           value={authorDetails}
           onChangeText={setAuthorDetails}
         />
@@ -106,13 +117,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   header: {
-    backgroundColor: "#00897B",
-    padding: 15,
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: "#00A878"
   },
   headerText: {
-    fontSize: 20,
-    color: "#FFFFFF",
+    fontSize: 24,
+    color: "white",
     fontWeight: "bold",
   },
   form: {

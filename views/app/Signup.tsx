@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { useRouter } from "expo-router";
+import {View,Text,TextInput,TouchableOpacity,StyleSheet,Image,ScrollView,Alert,} from "react-native";
 
-const SignUpScreen = ({ navigation }) => {
+const SignUpScreen = () => {
+  const router = useRouter(); // useRouter for navigation with expo-router
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,30 +30,30 @@ const SignUpScreen = ({ navigation }) => {
     console.log("User details:", { fullName, email, password });
 
     // Navigate to Login Screen
-    navigation.navigate("Login");
+    router.push("/Login");
   };
 
   const handleLoginRedirect = () => {
-    navigation.navigate("Login");
+    router.push("/Login");
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Placeholder for Background Image */}
+      {/* Background Image */}
       <Image
-        source={require('../assets/images/signup.jpg')} // Replace with your image path
+        source={require("../assets/images/signup.jpg")} // Replace with your image path
         style={styles.backgroundImage}
       />
 
-      {/* Placeholder for Logo */}
+      {/* Logo */}
       <Image
-        source={require('../assets/images/Case_Vault.webp')} // Replace with your logo path
+        source={require("../assets/images/Case_Vault.webp")} // Replace with your logo path
         style={styles.logo}
       />
 
       <Text style={styles.title}>CaseVault</Text>
       <Text style={styles.subtitle}>
-        Your one tap solution to access legal knowledge
+        Your one-tap solution to access legal knowledge
       </Text>
 
       <Text style={styles.sectionTitle}>Sign Up</Text>
@@ -107,7 +100,6 @@ const SignUpScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  // Same styles as before
   container: {
     flexGrow: 1,
     alignItems: "center",
