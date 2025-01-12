@@ -36,10 +36,6 @@ export default function CustomMenu() {
     }
   };
 
-  const handleAddAction = () => {
-    router.push("/upload");
-  };
-
   const renderSuggestedItem = ({ item }) => (
     <View style={styles.suggestedItem}>
       <Text style={styles.suggestedTitle}>{item.title}</Text>
@@ -54,7 +50,7 @@ export default function CustomMenu() {
         <Text style={styles.headerTitle}>CaseVault</Text>
         <TouchableOpacity style={styles.profileCircle} onPress={() => router.push("/profile")}>
           <Image
-            source={require("../assets/images/signup.jpg")}
+            source={require("../assets/images/profile.jpg")}
             style={styles.profileImage}
           />
         </TouchableOpacity>
@@ -95,11 +91,6 @@ export default function CustomMenu() {
           contentContainerStyle={styles.suggestedList}
         />
       </View>
-
-      {/* Add Button */}
-      <TouchableOpacity style={styles.addButton} onPress={handleAddAction}>
-        <Ionicons name="add" size={32} color="white" />
-      </TouchableOpacity>
 
       {/* Footer Buttons */}
       <View style={styles.buttonsContainer}>

@@ -28,7 +28,7 @@ const Profile = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Profile Section */}
         <View style={styles.profileSection}>
-          <Image style={styles.profileImage} source={require("../assets/images/signup.jpg")}/>
+          <Image style={styles.profileImage} source={require("../assets/images/profile.jpg")}/>
           <Text style={styles.profileName}>Jane Smith</Text>
           <Text style={styles.profileEmail}>janesmith@email.com</Text>
         </View>

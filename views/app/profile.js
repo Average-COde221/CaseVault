@@ -22,7 +22,7 @@ const ProfileScreen = () => {
       <View style={styles.profileContainer}>
         <View style={styles.profileImageWrapper}>
           <Image
-            source={require("../assets/images/signup.jpg")}
+            source={require("../assets/images/profile.jpg")}
             style={styles.profileImage}
           />
         </View>
