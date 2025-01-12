@@ -2,10 +2,5 @@
 
 
 .env
-minify.js
 
-
-
-node_modules
-
-
+AdminPanel2.0/node_modules
