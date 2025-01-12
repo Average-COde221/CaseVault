@@ -1,5 +1,5 @@
 const express=require('express');
-const authRoutes=require('./routes/user_auth');
+const authRoutes=require('../routes/user_auth');
 const app=express();
 
 app.use(express.json()); //parse json
