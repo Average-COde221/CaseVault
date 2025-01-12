@@ -12,7 +12,7 @@ router.post('/register', async(req, res) =>{
     const {email,password,name}=req.body;
     try {
         const userRecord=await auth.createUser({email:email,password:password,displayName:name});
-        await db.collection('users').doc(userRecord.user_id).set({email:userRecord.email,displayName:userRecord.name,createdAt:admin.firestore.FieldValue.serverTimeStamp()});
+        await db.collection('users').doc(userRecord.user_id).set({email:userRecord.email,displayName:userRecord.name,createdAt:admin.firestore.FieldValue.servertimeStamp()});
         res.status(201).json({message:'user registration successful',userId:userRecord.user_id});
 
     }

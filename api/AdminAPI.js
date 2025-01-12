@@ -4,7 +4,7 @@ const {addDoc}=require("../services/adminFunction");
 
 const app=express();
 
-app.post('/admin/upload',async (req, res) => {
+app.post('/admin/upload',async (req, res) => {  // upload document
     const {collectionName,data,adminId}=req.body;
     try {
         const docId= await addDoc(collectionName,data,adminId);
