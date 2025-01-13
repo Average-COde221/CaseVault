@@ -44,6 +44,24 @@ export default function LoginScreen() {
     }
   };
 
+  async function sendTokenToBackend(idToken) {
+      try {
+        const response=await fetch("file-url",{
+          method: "POST",
+          headers:{
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({idToken})
+
+        });
+      } catch (error) {
+        console.error("Error sending token to backend:", error);
+      }
+  }
+  
+    
+  
+
   return (
     <View style={styles.container}>
       {/* Header Image */}
@@ -198,3 +216,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
