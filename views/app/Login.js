@@ -8,7 +8,8 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router"; // Import useRouter for navigation
+import { useRouter } from "expo-router"; 
+import { login } from "../path-to-your-firebase-file"; // Update with the correct path
 
 export default function LoginScreen() {
   const router = useRouter(); // Use router for navigation
@@ -22,7 +23,7 @@ export default function LoginScreen() {
   };
 
   // Function to handle login
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields.");
       return;
@@ -31,9 +32,15 @@ export default function LoginScreen() {
       Alert.alert("Error", "Please enter a valid email address.");
       return;
     }
-    // If validation passes
-    Alert.alert("Success", `Welcome back, ${email}!`);
-    router.push("/"); // Navigate to the Home screen using Expo Router
+
+    try {
+      const idToken = await login(email, password); // Call the login function
+      Alert.alert("Success", "Login successful!");
+      console.log("ID Token:", idToken); // Use the ID token for backend requests
+      router.push("/"); // Navigate to the Home screen using Expo Router
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
@@ -98,7 +105,6 @@ export default function LoginScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
