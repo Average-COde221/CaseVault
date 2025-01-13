@@ -4,9 +4,11 @@ const fs = require('fs');
 
 require('dotenv').config();
 
+const serviceKey=JSON.parse(process.env.DRIVE_KEY);
+
 // Authenticate with the service account JSON key
 const auth = new google.auth.GoogleAuth({
-  keyFile: path.join(__dirname, process.env.DRIVE_KEY), // Path to your JSON key file
+  credentials:serviceKey, // Path to your JSON key file
   scopes: ['https://www.googleapis.com/auth/drive'],
 });
 
