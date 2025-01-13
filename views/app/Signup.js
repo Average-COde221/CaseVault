@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import {View,Text,TextInput,TouchableOpacity,StyleSheet,Image,ScrollView,Alert,} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ScrollView,
+  Alert,
+} from "react-native";
 
 const SignUpScreen = () => {
   const router = useRouter(); // useRouter for navigation with expo-router

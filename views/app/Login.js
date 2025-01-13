@@ -16,11 +16,10 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
 
   // Function to validate email
-  const validateEmail = (email: string): boolean => {
+  const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  
 
   // Function to handle login
   const handleLogin = () => {
@@ -111,12 +110,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 160,
     marginBottom: 20,
-    overflow: "hidden", 
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover", 
+    resizeMode: "cover",
   },
   logoContainer: {
     width: 100,

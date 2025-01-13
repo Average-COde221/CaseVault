@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,13 +9,19 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function CustomMenu() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [isReady, setIsReady] = useState(false);
+  const [progress, setProgress] = useState(0);
   const router = useRouter();
 
   // Sample data for "Suggested For You"
@@ -26,6 +32,19 @@ export default function CustomMenu() {
     { id: "4", title: "Case 4", author: "Author D" },
     { id: "5", title: "Case 5", author: "Author E" },
   ];
+
+  useEffect(() => {
+    async function loadResources() {
+      for (let i = 1; i <= 100; i++) {
+        await new Promise(resolve => setTimeout(resolve, 30)); // Simulate loading
+        setProgress(i);
+      }
+      setIsReady(true);
+      SplashScreen.hideAsync();
+    }
+
+    loadResources();
+  }, []);
 
   const handleAuthAction = () => {
     if (isLoggedIn) {
@@ -42,6 +61,20 @@ export default function CustomMenu() {
       <Text style={styles.suggestedAuthor}>{item.author}</Text>
     </View>
   );
+
+  if (!isReady) {
+    // Splash Screen with Logo and Loading Progress
+    return (
+      <View style={[styles.splashContainer, { backgroundColor: "white" }]}>
+        <Image
+          source={require("../assets/images/Case_Vault.webp")} // Replace with your logo file path
+          style={styles.splashLogo}
+        />
+        <Text style={[styles.splashText, { color: "#00A878" }]}>Loading... {progress}%</Text>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -123,6 +156,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+  },
+  splashContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#00A878",
+  },
+  splashLogo: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+    resizeMode: "contain",
+  },
+  splashText: {
+    fontSize: 20,
+    color: "white",
+    marginBottom: 20,
   },
   header: {
     flexDirection: "row",
@@ -212,18 +262,6 @@ const styles = StyleSheet.create({
   suggestedAuthor: {
     fontSize: 12,
     color: "#757575",
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 100,
-    right: 25,
-    backgroundColor: "#FF5722",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
   },
   buttonsContainer: {
     flexDirection: "row",
