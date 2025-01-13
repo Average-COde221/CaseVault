@@ -11,8 +11,8 @@ CORS(app)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 try:
-    kmeans_session = ort.InferenceSession('kmeans.onnx')
-    knn_session = ort.InferenceSession('knn.onnx')
+    kmeans_session = ort.InferenceSession('recommendation-engine\Model\kmeans_model.onnx')
+    knn_session = ort.InferenceSession('recommendation-engine\Model\knn_model.onnx')
     logging.info("ONNX models loaded successfully.")
 except Exception as e:
     logging.error(f"Error loading ONNX models: {e}")

@@ -20,7 +20,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 lemmatizer = WordNetLemmatizer()
 
-
 def clean_text(text):
     try:
         if not isinstance(text, str):
@@ -42,6 +41,18 @@ def lemmatize_text(text):
         logging.error(f"Error in lemmatize_text: {e}")
         return text
 
+def remove_unwanted_content(text):
+    try:
+        logging.info("Removing unwanted content from text.")
+        # Remove "Generated PDF", "case_id", and "case_no" fields
+        text = re.sub(r'Generated PDF', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'case_id:\s*\S+', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'case_no:\s*\S+', '', text, flags=re.IGNORECASE)
+        return text.strip()
+    except Exception as e:
+        logging.error(f"Error in remove_unwanted_content: {e}")
+        return text
+
 def extract_text_from_pdf(pdf_path):
     try:
         logging.info(f"Extracting text from PDF: {pdf_path}")
@@ -49,6 +60,7 @@ def extract_text_from_pdf(pdf_path):
         text = ""
         for page in reader.pages:
             text += page.extract_text() or ""
+        text = remove_unwanted_content(text)
         return clean_text(text)
     except Exception as e:
         logging.error(f"Error in extract_text_from_pdf: {e}")
@@ -119,7 +131,6 @@ def preprocess_data(df):
     except Exception as e:
         logging.error(f"Error in preprocess_data: {e}")
         return df
-
 
 def main(input_source, source_type):
     try:
