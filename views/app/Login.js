@@ -1,15 +1,8 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from "react-native";
-import { useRouter } from "expo-router"; 
-import { login } from "../path-to-your-firebase-file"; // Update with the correct path
+import { View, Text, TextInput, Button, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth"; // Import the Firebase method
+import { auth } from "../firebaseConfig"; // Import your Firebase configuration
 
 export default function LoginScreen() {
   const router = useRouter(); // Use router for navigation
@@ -34,11 +27,17 @@ export default function LoginScreen() {
     }
 
     try {
-      const idToken = await login(email, password); // Call the login function
+      // Call Firebase sign-in method
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      // Retrieve ID token
+      const idToken = await userCredential.user.getIdToken();
+
       Alert.alert("Success", "Login successful!");
-      console.log("ID Token:", idToken); // Use the ID token for backend requests
-      router.push("/"); // Navigate to the Home screen using Expo Router
+      console.log("ID Token:", idToken); // Log the ID token
+      router.push("/"); // Navigate to the Home screen
     } catch (error) {
+      console.error("Error logging in:", error.message);
       Alert.alert("Error", error.message);
     }
   };
