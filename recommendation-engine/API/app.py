@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import onnxruntime as ort
 import numpy as np
+import pandas as pd
 from preprocessor import preprocess_data  
 import logging
 from flask_cors import CORS
@@ -11,8 +12,8 @@ CORS(app)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 try:
-    kmeans_session = ort.InferenceSession('recommendation-engine\Model\kmeans_model.onnx')
-    knn_session = ort.InferenceSession('recommendation-engine\Model\knn_model.onnx')
+    kmeans_session = ort.InferenceSession(r'D:/hackathons/CaseVault/recommendation-engine/Model/kmeans_model.onnx')
+    knn_session = ort.InferenceSession(r'D:/hackathons/CaseVault/recommendation-engine/Model/knn_model.onnx')
     logging.info("ONNX models loaded successfully.")
 except Exception as e:
     logging.error(f"Error loading ONNX models: {e}")
@@ -35,8 +36,13 @@ def recommend():
 
         try:
             preprocessed_data = preprocess_data(input_data, content_type=content_type)
-            if not isinstance(preprocessed_data, np.ndarray):
-                logging.error("Preprocessing returned invalid format")
+            logging.info(f"Preprocessed data type: {type(preprocessed_data)}")
+            if isinstance(preprocessed_data, pd.DataFrame):
+                logging.info(f"Preprocessed DataFrame shape: {preprocessed_data.shape}")
+            elif isinstance(preprocessed_data, np.ndarray):
+                logging.info(f"Preprocessed ndarray shape: {preprocessed_data.shape}")
+            else:
+                logging.error("Preprocessed data is of unexpected type")
                 return jsonify({"error": "Preprocessing failed, invalid data format"}), 400
         except Exception as e:
             logging.error(f"Error during preprocessing: {e}")
@@ -67,7 +73,6 @@ def recommend():
     except Exception as e:
         logging.error(f"Unhandled error: {e}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
