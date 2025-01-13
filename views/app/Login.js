@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth"; // Import the Firebase method
-import { auth } from "../firebaseConfig"; // Import your Firebase configuration
+import { auth } from "../config/firebaseConfig"; // Import your Firebase configuration
 
 export default function LoginScreen() {
   const router = useRouter(); // Use router for navigation
@@ -21,24 +21,26 @@ export default function LoginScreen() {
       Alert.alert("Error", "Please fill in all fields.");
       return;
     }
+  
     if (!validateEmail(email)) {
       Alert.alert("Error", "Please enter a valid email address.");
       return;
     }
-
+  
     try {
-      // Call Firebase sign-in method
+      // Use Firebase Auth to sign in with email and password
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
+  
       // Retrieve ID token
       const idToken = await userCredential.user.getIdToken();
-
-      Alert.alert("Success", "Login successful!");
+  
+      // Successful login
+      Alert.alert("Login Success", `Welcome ${userCredential.user.email}`);
       console.log("ID Token:", idToken); // Log the ID token
       router.push("/"); // Navigate to the Home screen
     } catch (error) {
-      console.error("Error logging in:", error.message);
-      Alert.alert("Error", error.message);
+      // Error handling
+      Alert.alert("Login Error", error.message);
     }
   };
 
