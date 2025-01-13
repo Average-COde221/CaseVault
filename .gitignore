@@ -3,3 +3,8 @@
 
 .env
 
+
+node_modules
+
+minify.js
+firebase-debug.log
