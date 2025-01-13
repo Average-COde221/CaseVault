@@ -1,1 +1,3 @@
-Preprocessing
+recommendation-engine/Data/preprocessed/
+recommendation-engine/node_modules/
+recommendation-engine/API/__pycache__/

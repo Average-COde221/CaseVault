@@ -44,7 +44,6 @@ def lemmatize_text(text):
 def remove_unwanted_content(text):
     try:
         logging.info("Removing unwanted content from text.")
-        # Remove "Generated PDF", "case_id", and "case_no" fields
         text = re.sub(r'Generated PDF', '', text, flags=re.IGNORECASE)
         text = re.sub(r'case_id:\s*\S+', '', text, flags=re.IGNORECASE)
         text = re.sub(r'case_no:\s*\S+', '', text, flags=re.IGNORECASE)
@@ -92,61 +91,52 @@ def load_data(input_source, source_type):
         logging.error(f"Error in load_data: {e}")
         return pd.DataFrame()
 
-def preprocess_data(df):
+def preprocess_data(df, content_type=None):
     try:
-        logging.info("Starting data preprocessing.")
+        logging.info(f"Starting data preprocessing for content type: {content_type}.")
         
         if "facts" in df.columns:
             df['facts'] = df['facts'].apply(clean_text).apply(lemmatize_text)
         if "title" in df.columns:
             df['title'] = df['title'].apply(clean_text).apply(lemmatize_text)
 
-        categorical_cols = [col for col in df.columns if df[col].dtype == 'object' and col not in ['title', 'facts']]
-        df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
-
-        svd = TruncatedSVD(n_components=100)
-        reduced_data = svd.fit_transform(df.select_dtypes(include=[np.number]))
-        reduced_df = pd.DataFrame(reduced_data, columns=[f'component_{i+1}' for i in range(reduced_data.shape[1])])
-
-        if "judgment_date" in df.columns:
-            df['judgment_date'] = pd.to_datetime(df['judgment_date'], errors='coerce')
-            today = datetime.today()
-            df['recency_days'] = (today - df['judgment_date']).dt.days
-
-        if "facts" in df.columns:
-            df['combined_text'] = (df['facts'].fillna('') + " " + df.get('title', '').fillna(''))
-            tfidf = TfidfVectorizer(stop_words='english', max_features=5000)
-            tfidf_matrix = tfidf.fit_transform(df['combined_text'])
-            tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=tfidf.get_feature_names_out())
-            df = pd.concat([df.reset_index(drop=True), tfidf_df.reset_index(drop=True)], axis=1)
-
-        features = np.array(df.select_dtypes(include=[np.number]))
-        if features.ndim != 2:
-            logging.error(f"Features are not in the expected 2D shape: {features.shape}")
-            return None
-        logging.info(f"Processed features shape: {features.shape}")
-
-        logging.info("Data preprocessing completed successfully.")
+        if content_type == "pdf":
+            logging.info("Additional processing for PDF data.")
+        elif content_type == "json":
+            logging.info("Additional processing for JSON data.")
+        
+        logging.info("Preprocessing completed successfully.")
         return df
     except Exception as e:
         logging.error(f"Error in preprocess_data: {e}")
-        return df
+        return None
 
 def main(input_source, source_type):
     try:
-        logging.info(f"Starting main pipeline with {input_source} and source type {source_type}.")
+        if source_type not in ["pdf", "csv", "json"]:
+            logging.error(f"Invalid content type: {source_type}. Supported types are 'pdf', 'csv', and 'json'.")
+            return None
+        
+        logging.info(f"Starting main pipeline with input source: {input_source} and source type: {source_type}.")
+        
         df = load_data(input_source, source_type)
         if df.empty:
-            logging.warning("No data loaded, terminating process.")
+            logging.warning("No data loaded from the provided source. Terminating process.")
+            return None
+        
+        preprocessed_df = preprocess_data(df)
+        
+        if preprocessed_df is None or preprocessed_df.empty:
+            logging.warning("Preprocessing returned no data. Terminating process.")
             return None
 
-        preprocessed_df = preprocess_data(df)
-
-        logging.info("Preprocessing complete.")
-        return preprocessed_df  
+        logging.info("Preprocessing complete. Data is ready for further steps.")
+        return preprocessed_df
+    
     except Exception as e:
-        logging.critical(f"Error in main pipeline: {e}")
+        logging.critical(f"Critical error in main pipeline: {e}")
         return None
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
