@@ -17,7 +17,7 @@ import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
 
-export default function CustomMenu() {
+export default function CustomMenu() {r
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [isReady, setIsReady] = useState(false);

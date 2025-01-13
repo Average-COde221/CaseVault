@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/upload.js", "app/download.js", "app/profile.js"  ]
+, "app/upload.js", "app/download.js", "app/profile.js", "app/Signup.js", "app/Login.js", "app/index.js", "app/setting.js"  ]
 }

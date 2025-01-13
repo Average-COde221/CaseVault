@@ -1,15 +1,8 @@
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  ScrollView,
-  Alert,
-} from "react-native";
+import {View,Text,TextInput,TouchableOpacity,StyleSheet,Image,ScrollView,Alert,} from "react-native";
+import { createUserWithEmailAndPassword } from "firebase/auth"; // Import Firebase method
+import { auth } from "../config/firebaseConfig"; // Import Firebase config
 
 const SignUpScreen = () => {
   const router = useRouter(); // useRouter for navigation with expo-router
@@ -17,7 +10,7 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!fullName.trim()) {
       Alert.alert("Validation Error", "Please enter your full name.");
       return;
@@ -34,12 +27,22 @@ const SignUpScreen = () => {
       return;
     }
 
-    // Perform sign-up logic (e.g., API request)
-    Alert.alert("Success", "Account created successfully!");
-    console.log("User details:", { fullName, email, password });
-
-    // Navigate to Login Screen
-    router.push("/Login");
+    try {
+      // Use Firebase to create a new user with email and password
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      
+      // After successful sign-up, show an alert and navigate to Login screen
+      Alert.alert("Success", "Account created successfully!");
+      console.log("User details:", { fullName, email, password });
+      router.push("/Login"); // Navigate to the Login screen
+    } catch (error) {
+      // Handle any errors during the sign-up process
+      Alert.alert("Sign-Up Error", error.message);
+    }
   };
 
   const handleLoginRedirect = () => {
