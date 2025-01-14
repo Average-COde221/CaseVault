@@ -3,6 +3,10 @@ const { auth, db } = require('../firebase'); // Adjust import to your Firebase s
 const app = express();
 app.use(express.json());
 
+const cors=require("cors");
+
+app.use(cors());
+
 // Register API
 const register = async (req, res) => {
     const { email, password, name } = req.body;

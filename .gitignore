@@ -8,3 +8,4 @@ node_modules
 minify.js
 firebase-debug.log
 uploadToDrive.js
+.expo

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import {View,Text,TextInput,TouchableOpacity,StyleSheet,Image,ScrollView,Alert,} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth"; // Import Firebase method
 import { auth } from "../config/firebaseConfig"; // Import Firebase config
+import axios from "axios"; // Import axios
 
 const SignUpScreen = () => {
   const router = useRouter(); // useRouter for navigation with expo-router
@@ -35,9 +36,14 @@ const SignUpScreen = () => {
         password
       );
       
-      // After successful sign-up, show an alert and navigate to Login screen
+      // After successful sign-up, show an alert
       Alert.alert("Success", "Account created successfully!");
       console.log("User details:", { fullName, email, password });
+
+      // Send the user data to your backend API using axios
+      sendUserDataToBackend({ fullName, email, password });
+
+      // Navigate to Login screen
       router.push("/Login"); // Navigate to the Login screen
     } catch (error) {
       // Handle any errors during the sign-up process
@@ -48,6 +54,22 @@ const SignUpScreen = () => {
   const handleLoginRedirect = () => {
     router.push("/Login");
   };
+
+  // Function to send user data to backend using axios
+  async function sendUserDataToBackend(userData) {
+    try {
+      const response = await axios.post("http://localhost:5000/api/register", userData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Backend Response:", response.data); // Handle the response
+    } catch (error) {
+      console.error("Error sending data to backend:", error);
+      Alert.alert("Error", "Failed to send data to backend.");
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
