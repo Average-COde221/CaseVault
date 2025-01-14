@@ -1,5 +1,5 @@
 const express = require('express');
-const { getDocumentById } = require('../../services/userFunction'); // Adjust path based on your structure
+const { getDocumentById } = require('../services/userFunction'); // Adjust path based on your structure
 const { db } = require('../firebase'); // Adjust to your Firebase setup
 
 const app = express();

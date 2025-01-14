@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { View, Text, TextInput, Button, Alert, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth"; // Import the Firebase method
 import { auth } from "../config/firebaseConfig"; // Import your Firebase configuration
+import axios from "axios"; // For making HTTP requests
 
 export default function LoginScreen() {
   const router = useRouter(); // Use router for navigation
@@ -21,46 +22,53 @@ export default function LoginScreen() {
       Alert.alert("Error", "Please fill in all fields.");
       return;
     }
-  
+
     if (!validateEmail(email)) {
       Alert.alert("Error", "Please enter a valid email address.");
       return;
     }
-  
+
     try {
       // Use Firebase Auth to sign in with email and password
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  
+
       // Retrieve ID token
       const idToken = await userCredential.user.getIdToken();
-  
+
       // Successful login
       Alert.alert("Login Success", `Welcome ${userCredential.user.email}`);
       console.log("ID Token:", idToken); // Log the ID token
-      router.push("/"); // Navigate to the Home screen
+
+      // Send the ID token to your backend API
+      await sendTokenToBackend(idToken);
+
+      // Navigate to the Home screen
+      router.push("/"); // Assuming this is the home screen
     } catch (error) {
       // Error handling
       Alert.alert("Login Error", error.message);
     }
   };
 
+  // Function to send ID token to the backend API
   async function sendTokenToBackend(idToken) {
-      try {
-        const response=await fetch("file-url",{
-          method: "POST",
-          headers:{
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({idToken})
+    try {
+      const response = await axios.post("http://localhost:5000/login", {
+        idToken,
+      });
 
-        });
-      } catch (error) {
-        console.error("Error sending token to backend:", error);
+      if (response.status === 200) {
+        // Successfully processed ID token in the backend
+        console.log("Backend Response:", response.data);
+        // Optionally, store user info in localStorage, state, or context
+      } else {
+        console.error("Error processing token in backend", response.data);
       }
+    } catch (error) {
+      console.error("Error sending token to backend:", error);
+      Alert.alert("Backend Error", "Unable to process login. Please try again.");
+    }
   }
-  
-    
-  
 
   return (
     <View style={styles.container}>
@@ -124,6 +132,7 @@ export default function LoginScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -216,4 +225,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-

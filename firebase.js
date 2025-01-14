@@ -1,6 +1,7 @@
 const firebase=require("firebase-admin");
 require('dotenv').config();
 
+
 const serviceAcc=JSON.parse(process.env.FIREBASE_KEY);
 
 firebase.initializeApp({

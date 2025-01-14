@@ -4,13 +4,13 @@ const admin=require('firebase-admin');
 
 const express=require('express');
 
-const router=express.Router();
+const app=express();
 
 
 
 //register api
 
-router.post('/register', async(req, res) =>{
+app.post('/register', async(req, res) =>{
     const {email,password,name}=req.body;
     try {
         const userRecord=await auth.createUser({email:email,password:password,displayName:name});
@@ -26,7 +26,7 @@ router.post('/register', async(req, res) =>{
 
 //login api
 
-router.post('/login',async(req, res) =>{
+app.post('/login',async(req, res) =>{
     const {idToken}=req.body;
     try {
         const decodedToken=await auth.verifyIdToken(idToken);
@@ -46,4 +46,7 @@ router.post('/login',async(req, res) =>{
     
 });
 
-module.exports=router;
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});

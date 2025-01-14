@@ -1,5 +1,5 @@
 const express = require('express');
-const { addDoc } = require('../../services/adminFunction'); // Adjust path based on your structure
+const { addDoc } = require('../services/adminFunction'); // Adjust path based on your structure
 const { db } = require('../firebase'); // Adjust to your Firebase setup
 
 const app = express();

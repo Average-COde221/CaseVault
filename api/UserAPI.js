@@ -27,4 +27,9 @@ app.get('/document/:id', async (req,res) => {
     
 });
 
-exports.api=functions.https.onRequest(app);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
+
+//exports.api=functions.https.onRequest(app);

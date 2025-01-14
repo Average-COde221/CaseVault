@@ -1,6 +1,5 @@
 const express = require('express');
-const { auth, db } = require('./firebase'); // Adjust import to your Firebase setup
-const admin = require('firebase-admin');
+const { auth, db } = require('../firebase'); // Adjust import to your Firebase setup
 const app = express();
 app.use(express.json());
 
@@ -57,7 +56,7 @@ app.post('/auth', async (req, res) => {
 });
 
 // Start Express server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
