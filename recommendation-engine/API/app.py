@@ -5,6 +5,8 @@ import pandas as pd
 from preprocessor import preprocess_data  
 import logging
 from flask_cors import CORS
+from io import BytesIO
+from preprocessor import extract_text_from_pdf
 
 app = Flask(__name__)
 CORS(app)
@@ -19,6 +21,7 @@ except Exception as e:
     logging.error(f"Error loading ONNX models: {e}")
     raise
 
+
 @app.route('/recommend', methods=['POST'])
 def recommend():
     try:
@@ -29,12 +32,15 @@ def recommend():
         elif content_type == 'text/csv':
             input_data = request.data.decode('utf-8')
         elif content_type == 'application/pdf':
-            input_data = request.data  
+            # Handle PDF data
+            pdf_data = request.data
+            input_data = extract_text_from_pdf(BytesIO(pdf_data))  # Extract text from PDF bytes
         else:
             logging.warning("Unsupported content type")
             return jsonify({"error": "Unsupported content type"}), 400
 
         try:
+            # Preprocess data (now input_data should be in a processable form)
             preprocessed_data = preprocess_data(input_data, content_type=content_type)
             logging.info(f"Preprocessed data type: {type(preprocessed_data)}")
             if isinstance(preprocessed_data, pd.DataFrame):
@@ -53,6 +59,7 @@ def recommend():
             preprocessed_data = np.expand_dims(preprocessed_data, axis=0)
 
         try:
+            # KMeans inference
             kmeans_input = {kmeans_session.get_inputs()[0].name: preprocessed_data}
             kmeans_output = kmeans_session.run(None, kmeans_input)
             cluster_id = np.argmax(kmeans_output[0], axis=1)[0]
@@ -61,6 +68,7 @@ def recommend():
             return jsonify({"error": "KMeans model inference error", "details": str(e)}), 500
 
         try:
+            # KNN inference
             knn_input = {knn_session.get_inputs()[0].name: np.array([[cluster_id]], dtype=np.float32)}
             knn_output = knn_session.run(None, knn_input)
             recommendations = knn_output[0].tolist()

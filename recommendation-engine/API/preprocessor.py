@@ -58,12 +58,19 @@ def extract_text_from_pdf(pdf_path):
         reader = PdfReader(pdf_path)
         text = ""
         for page in reader.pages:
-            text += page.extract_text() or ""
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
+            else:
+                logging.warning("Empty page found during text extraction.")
         text = remove_unwanted_content(text)
+        if not text:
+            logging.warning("No text found in the PDF.")
         return clean_text(text)
     except Exception as e:
         logging.error(f"Error in extract_text_from_pdf: {e}")
         return ""
+
 
 def process_json_data(json_data):
     try:
@@ -78,6 +85,9 @@ def load_data(input_source, source_type):
         logging.info(f"Loading data from {input_source} of type {source_type}")
         if source_type == "pdf":
             text = extract_text_from_pdf(input_source)
+            if not text:
+                logging.error(f"Failed to extract text from PDF: {input_source}")
+                return pd.DataFrame()  # Return an empty DataFrame if extraction failed
             return pd.DataFrame({"text": [text]})
         elif source_type == "json":
             with open(input_source, 'r') as file:
@@ -95,6 +105,10 @@ def preprocess_data(df, content_type=None):
     try:
         logging.info(f"Starting data preprocessing for content type: {content_type}.")
         
+        if df is None or df.empty:
+            logging.error("Empty or invalid DataFrame received.")
+            return None
+
         if "facts" in df.columns:
             df['facts'] = df['facts'].apply(clean_text).apply(lemmatize_text)
         if "title" in df.columns:
